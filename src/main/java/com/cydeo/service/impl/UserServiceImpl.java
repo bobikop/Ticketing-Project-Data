@@ -48,6 +48,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteByUserName(String username) {
+
+
         userRepository.deleteByUserName(username);
 
     }
@@ -63,5 +65,20 @@ public class UserServiceImpl implements UserService {
         userRepository.save(convertedUser);
 
         return findByUserName(user.getUserName());
+    }
+
+    @Override
+    public List<UserDTO> listAllByRole(String role) {
+        List<User> users = userRepository.findByRoleDescriptionIgnoreCase(role);
+        return users.stream().map(userMapper:: convertToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public void delete(String username) {
+
+        User user = userRepository.findByUserName(username);
+        user.setIsDeleted(true);
+        userRepository.save(user);
+
     }
 }
