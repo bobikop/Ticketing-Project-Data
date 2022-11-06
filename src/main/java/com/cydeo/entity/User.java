@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Where(clause = "is_deleted=false")
 public class User extends BaseEntity {
 
-    private String firstName;
+    private String firstName; // data base name by default will be first_name
     private String lastName;
     private String userName;
     private String passWord;
