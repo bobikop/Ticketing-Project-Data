@@ -54,10 +54,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO update(UserDTO user) {
-        //find current user first
+        //find current user first ------ before update we need dto set id
        User user1 = userRepository.findByUserName(user.getUserName()); // has id
        // map update user dto to entity object
-        User convertedUser = userMapper.convertToEntity(user); // no id and we need to take it form user1 and assigned to user
+        User convertedUser = userMapper.convertToEntity(user); // don't have  id and we need to take it form user1 and assigned to user
         //set id to the converted object
         convertedUser.setId(user1.getId());
         userRepository.save(convertedUser);
