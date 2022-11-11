@@ -49,10 +49,11 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void update(ProjectDTO dto) {
 
-        Project project = projectRepository.findByProjectCode(dto.getProjectCode());
-        Project convertedProject = projectMapper.convertToEntity(dto);
-        convertedProject.setId(project.getId());
-        convertedProject.setProjectStatus(project.getProjectStatus());
+        //day 3 : 12 explanation (setting the id before saving) pull from db get id set id save in db
+        Project project = projectRepository.findByProjectCode(dto.getProjectCode()); // go to Db and get DTO
+        Project convertedProject = projectMapper.convertToEntity(dto); // converted to entity
+        convertedProject.setId(project.getId()); // getting id form the project, project.getId() and set it to converted project
+        convertedProject.setProjectStatus(project.getProjectStatus());  // setting the status since is not in the form
         projectRepository.save(convertedProject);
 
     }
