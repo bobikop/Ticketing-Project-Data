@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public UserMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
@@ -22,7 +22,7 @@ public class UserMapper {
     }
 
     public UserDTO convertToDto(User entity){
-        return modelMapper.map(entity,UserDTO.class); // (source, target)  what is converted to what
-
+        return modelMapper.map(entity,UserDTO.class);
     }
+
 }

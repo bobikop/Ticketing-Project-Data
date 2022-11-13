@@ -13,5 +13,4 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     List<Project> findAllByAssignedManager(User manager);
     List<Project> findAllByProjectStatusIsNotAndAssignedManager(Status status, User assignedManager);
 
-
 }
