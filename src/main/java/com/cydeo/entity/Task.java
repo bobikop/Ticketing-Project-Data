@@ -35,7 +35,7 @@ public class Task extends BaseEntity{
     private LocalDate assignedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") // forien key in the table
+    @JoinColumn(name = "assigned_employee_id") // forien key in the table
     private User assignedEmployee;
 
     @ManyToOne(fetch = FetchType.LAZY)
