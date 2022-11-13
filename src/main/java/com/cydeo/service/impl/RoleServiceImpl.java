@@ -26,8 +26,10 @@ public class RoleServiceImpl implements RoleService {
 
         List<Role> roleList = roleRepository.findAll();
        return  roleList.stream()
-                .map(roleMapper :: convertToDto)
+                .map(roleMapper :: convertToDto) //ModelMapper is a third party converter which we can use
                 .collect(Collectors.toList());
+
+
 
     }
 

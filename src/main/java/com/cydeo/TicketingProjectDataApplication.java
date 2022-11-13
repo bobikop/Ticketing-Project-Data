@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-@SpringBootApplication
+@SpringBootApplication // this annotation include @configuration also so we can create bean here
 public class TicketingProjectDataApplication {
 
     public static void main(String[] args) {
@@ -20,4 +20,7 @@ public class TicketingProjectDataApplication {
             return new ModelMapper();
     }
 
+
 }
+// whenever we use third party clas  we need to create a bean we can create confing class and use @ Configuration
+// annotation and create the method we can do that in runner class since @SpringBootApplication also includes @Configuration
