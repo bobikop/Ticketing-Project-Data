@@ -1,6 +1,7 @@
 package com.cydeo.service.impl;
 
 import com.cydeo.dto.ProjectDTO;
+import com.cydeo.dto.UserDTO;
 import com.cydeo.entity.Project;
 import com.cydeo.entity.User;
 import com.cydeo.enums.Status;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
-
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     private final UserService userService;
@@ -37,33 +37,38 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectDTO getByProjectCode(String code) {
         Project project = projectRepository.findByProjectCode(code);
-       return projectMapper.convertToDto(project);
+        return projectMapper.convertToDto(project);
     }
 
     @Override
     public List<ProjectDTO> listAllProjects() {
-        List<Project>  list = projectRepository.findAll(Sort.by("projectCode"));
-        return  list.stream()
-                .map(project -> projectMapper.convertToDto(project))
-                .collect(Collectors.toList());
+
+        List<Project> list = projectRepository.findAll(Sort.by("projectCode"));
+
+        return list.stream().map(projectMapper::convertToDto).collect(Collectors.toList());
     }
 
     @Override
     public void save(ProjectDTO dto) {
-//        Project project = projectMapper.convertToEntity(dto);
-//        projectRepository.save(project);
+
         dto.setProjectStatus(Status.OPEN);
-        projectRepository.save(projectMapper.convertToEntity(dto));
+        Project project = projectMapper.convertToEntity(dto);
+        projectRepository.save(project);
     }
 
     @Override
     public void update(ProjectDTO dto) {
 
         Project project = projectRepository.findByProjectCode(dto.getProjectCode());
+
         Project convertedProject = projectMapper.convertToEntity(dto);
+
         convertedProject.setId(project.getId());
+
         convertedProject.setProjectStatus(project.getProjectStatus());
+
         projectRepository.save(convertedProject);
+
 
     }
 
@@ -71,11 +76,13 @@ public class ProjectServiceImpl implements ProjectService {
     public void delete(String code) {
         Project project = projectRepository.findByProjectCode(code);
         project.setIsDeleted(true);
-        project.setProjectCode(project.getProjectCode() + "-" + project.getId());
+
+        project.setProjectCode(project.getProjectCode() + "-" + project.getId());  // SP03-4
 
         projectRepository.save(project);
 
         taskService.deleteByProject(projectMapper.convertToDto(project));
+
     }
 
     @Override
@@ -84,9 +91,36 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProjectStatus(Status.COMPLETE);
         projectRepository.save(project);
 
-
-        taskService.deleteByProject(projectMapper.convertToDto(project));
+        taskService.completeByProject(projectMapper.convertToDto(project));
     }
 
+    @Override
+    public List<ProjectDTO> listAllProjectDetails() {
+
+        UserDTO currentUserDTO = userService.findByUserName("harold@manager.com");
+        User user = userMapper.convertToEntity(currentUserDTO);
+
+        List<Project> list = projectRepository.findAllByAssignedManager(user);
+
+
+        return list.stream().map(project -> {
+
+                    ProjectDTO obj = projectMapper.convertToDto(project);
+
+                    obj.setUnfinishedTaskCounts(taskService.totalNonCompletedTask(project.getProjectCode()));
+                    obj.setCompleteTaskCounts(taskService.totalCompletedTask(project.getProjectCode()));
+
+                    return obj;
+                }
+
+        ).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProjectDTO> listAllNonCompletedByAssignedManager(UserDTO assignedManager) {
+        List<Project> projects = projectRepository
+                .findAllByProjectStatusIsNotAndAssignedManager(Status.COMPLETE, userMapper.convertToEntity(assignedManager));
+        return projects.stream().map(projectMapper::convertToDto).collect(Collectors.toList());
+    }
 
 }
