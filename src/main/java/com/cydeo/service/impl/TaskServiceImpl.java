@@ -60,6 +60,7 @@ public class TaskServiceImpl implements TaskService {
         Task convertedTask  = taskMapper.convertToEntity(dto);
 
         if(task.isPresent()){
+            // get the status from dto  and if there is no status get it from db
             convertedTask.setTaskStatus(dto.getTaskStatus() == null ? task.get().getTaskStatus() : dto.getTaskStatus());
             convertedTask.setAssignedDate(task.get().getAssignedDate());
             taskRepository.save(convertedTask);
@@ -71,7 +72,6 @@ public class TaskServiceImpl implements TaskService {
     public void delete(Long id) {
 
         Optional<Task> foundTask = taskRepository.findById(id);
-
         if(foundTask.isPresent()){
             foundTask.get().setIsDeleted(true);
             taskRepository.save(foundTask.get());
@@ -103,7 +103,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void deleteByProject(ProjectDTO projectDTO) {
         Project project = projectMapper.convertToEntity(projectDTO);
-        List<Task> tasks = taskRepository.findAllByProject(project);
+        List<Task> tasks = taskRepository.findAllByProject(project);// by using project entity we are trying to see which task we want to delete
         tasks.forEach(task -> delete(task.getId()));
     }
 
